@@ -1,6 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from transactions.models import Transaction
+from accounts.models import Account
 
 
 def transaction_list_view(request):
@@ -36,49 +37,35 @@ def transaction_detail_view(request, pk):
 def transaction_create_view(request):
 
     origin_account = request.POST.get('origin_account')
-    destination_accoount = request.POST.get('destination_account')
+    destination_account = request.POST.get('destination_account')
     cash = request.POST.get('cash')
     date = request.POST.get('date')
 
     new_transaction = Transaction(
         origin_account=origin_account,
-        destination_accoount=destination_accoount, 
+        destination_accoount=destination_account, 
         cash=cash, 
         date=date
         )
-
+    
     new_transaction.save()
+    
+    origin_account_instance = Account.objects.get(origin_account=origin_account)
+    origin_account_instance.balance -= cash
 
+    destination_account_instance = Account.objects.get(destination_account=destination_account)
+    destination_account_instance.balance += cash
+
+    origin_account_instance.save()
+    destination_account_instance.save()
+    
     return HttpResponse(status=201)
 
 
-def transaction_update_view(request, pk):
 
-    transaction = Transaction.objects.get(pk=pk)
-
-    origin_account = request.POST.get('origin_account')
-    destination_account = request.POST.get('destination_account')
-    cash = request.POST.get('cash')
-    date = request.POST.get('date')
-
-    if origin_account:
-        transaction.origin_account = origin_account
-    if destination_account:
-        transaction.destination_account = destination_account
-    if cash:
-        transaction.cash = cash 
-    if date:
-        transaction.date = date
-
-    transaction.save()
-
-    return HttpResponse(status=200)
+    
+    
 
 
-def transanction_delete_view(request, pk):
 
-    transaction = Transaction.objects.get(pk=pk)
 
-    transaction.delete()
-
-    return HttpResponse(status=200)

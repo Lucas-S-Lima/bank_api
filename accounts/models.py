@@ -5,10 +5,10 @@ from clients.models import Client
 class Account(models.Model):
     
     TIPO_DE_CONTA = {
-        'Conta corrente': 'CC',
-        'Conta Poupança': 'CP',
-        'Conta Salário': 'CS',
-        'Conta Conjunta': 'CCJ',
+        'CC': 'Conta Corrente',
+        'CP': 'Conta Poupança',
+        'CS': 'Conta Salário',
+        'CCJ': 'Conta Conjunta',
     }
 
 
